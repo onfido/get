@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.homepage = 'https://github.com/BlakeTurner/get'
   s.license = 'MIT'
 
-  s.files         = `git ls-files`.split('\n')
+  s.files        = Dir.glob("{bin,lib}/**/*") + %w(LICENSE.txt README.md)
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split('\n')
   s.require_paths = ['lib']
 
