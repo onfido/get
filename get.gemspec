@@ -12,8 +12,8 @@ Gem::Specification.new do |s|
   s.homepage = 'https://github.com/BlakeTurner/get'
   s.license = 'MIT'
 
-  s.files        = Dir.glob("{bin,lib}/**/*") + %w(LICENSE.txt README.md)
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split('\n')
+  s.files         = Dir.glob("{bin,lib}/**/*") + %w(LICENSE.txt README.md)
+  s.test_files    = Dir.glob("{spec}/**/*")
   s.require_paths = ['lib']
 
   s.add_runtime_dependency 'hashie', '3.4.1'
