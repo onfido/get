@@ -96,6 +96,11 @@ With field being queried in the class name
 Get::UserById.run(123)
 ```
 
+Fail loudly
+```
+Get::UserById.run!(123)
+```
+
 Slightly more flexible model:
 ```ruby
 Get::UserBy.run(id: 123, employer_id: 88)
@@ -238,7 +243,7 @@ class MyCustomEntity < Get::Entities::Collection
 end
 
 Get.config do |config|
- config.register_entity(:users, MyCustomEntity)
+ config.register_entity(:users_by_last_name, MyCustomEntity)
 end
 ```
 
