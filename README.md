@@ -97,7 +97,7 @@ Get::UserById.run(123)
 ```
 
 Fail loudly
-```
+```ruby
 Get::UserById.run!(123)
 ```
 
