@@ -6,18 +6,18 @@ Dynamically generate classes to encapsulate common database queries in Rails.
 
 #### Problem 1: Encapsulation
 
-ORMs like ActiveRecord make querying the database incredible easy, but with power comes responsibility, and there's a lot of irresponsible code our there.
+ORMs like ActiveRecord make querying the database incredible easy, but with power comes responsibility, and there's a lot of irresponsible code out there.
 
 Consider:
 
-```
+```ruby
 User.where(name: 'blake').order('updated_at DESC').limit(2)
 ```
 
 This query is easy to read, and it works. Unfortunately, anything that uses it is tough to test, and any other implementation has to repeat this same cumbersome method chain.
 Sure, you can wrap it in a method:
 
-```
+```ruby
 def find_two_blakes
   User.where(name: 'blake').order('updated_at DESC').limit(2)
 end
@@ -29,7 +29,7 @@ But where does it live? Scope methods on models are (IMHO) hideous, so maybe a H
 
 ORMs like ActiveRecord also makes querying associations incredible easy. Consider:
 
-```
+```html+ruby
 <div>
   <ul>
     <% current_user.employer.sportscars.each do |car| %>
@@ -44,13 +44,15 @@ A spec for a view like this would need to either create/stub each of the records
 
 If you move the query to the controller, it's a bit better:
 
-```
+```ruby
 # controller
 def index
   @employer = current_user.employer
   @sportscars = @employer.sportscars
 end
+```
 
+```html+ruby
 #view
 <div>
   <ul>
@@ -67,7 +69,7 @@ But that's just lipstick on a pig. We've simply shifted the testing burden to th
 
 Consider:
 
-```
+```ruby
 User.where(last_name: 'Turner').order('id DESC').limit(1)
 ```
 
@@ -90,19 +92,19 @@ These themes are not mutually exclusive; **Query** and **Association** can be ei
 #### Singular Queries - Return a single record
 
 With field being queried in the class name
-```
+```ruby
 Get::UserById.run(123)
 ```
 
 Slightly more flexible model:
-```
+```ruby
 Get::UserBy.run(id: 123, employer_id: 88)
 ```
 
 #### Plural Queries - Return a collection of records
 
 _Note the plurality of 'Users'_
-```
+```ruby
 Get::UsersByLastName.run('Turner')
 ```
 
@@ -113,17 +115,17 @@ Associations use 'From', and are sugar for the chains we so often write in rails
 _You can pass either an entity or an id, the only requirement is that it responds to #id_
 
 Parent relationship (user.employer):
-```
+```ruby
 Get::EmployerFromUser.run(user)
 ```
 
 Child relationship (employer.users):
-```
+```ruby
 Get::UsersFromEmployer.run(employer_id)
 ```
 
 Complex relationship (user.employer.sportscars)
-```
+```ruby
 Get::SportscarsFromUser.run(user, via: :employer)
 ```
 
@@ -137,15 +139,15 @@ This choice was made to combat query pollution throughout the app, particularly 
 
 To achieve this, Get returns **entities** instead of ORM  objects (`ActiveRecord::Base`, etc.).
 These entity classes are generated at runtime with names appropriate to their contents.
-You can also register your own adapters in the Get config.
+You can also register your own entities in the Get config.
 
-```
+```ruby
 >> result = Get::UserById.run(user.id)
 >> result.class.name
 >> "Get::Entities::GetUser"
 ```
 
-Individual records will have all attributes accessible via dot notation and hash notation, but attempts to get associations will fail.
+Individual entities will have all attributes accessible via dot notation and hash notation, but attempts to get associations will fail.
 Collections have all of the common enumerator methods: `first`, `last`, `each`, and `[]`.
 
 Dynamically generated Get::Entities are prefixed with `Get` to avoid colliding with your ORM objects.
@@ -157,7 +159,7 @@ Get accomplishes this by making class-level mocking/stubbing very easy.
 
 Consider:
 
-```
+```ruby
 # sportscars_controller.rb
 
 # ActiveRecord
@@ -173,14 +175,14 @@ end
 
 The above methods do the exact same thing. Cool, let's test them:
 
-```
+```ruby
 # sportscars_controller.rb
 describe SportscarsController, type: :controller do
   context '#index' do
     context 'ActiveRecord' do
       let(:user) { FactoryGirl.build_stubbed(:user, employer: employer) }
       let(:employer) { FactoryGirl.build_stubbed(:employer) }
-      let(:sportscars) { FactoryGirl.create_list(:sportscars, 3) }
+      let(:sportscars) { 3.times { FactoryGirl.build_stubbed(:sportscars) } }
 
       before do
         employer.sportscars << sportscars
@@ -195,7 +197,7 @@ describe SportscarsController, type: :controller do
 
     context 'Get' do
       let(:user) { FactoryGirl.build_stubbed(:user, employer: employer) }
-      let(:sportscars) { FactoryGirl.create_list(:sportscars, 3) }
+      let(:sportscars) { 3.times { FactoryGirl.build_stubbed(:sportscars) } }
 
       before do
         allow(Get::SportscarsFromUser).to receive(:run).and_return(sportscars)
@@ -219,7 +221,7 @@ This will speed up tests (a little), but more importantly it makes them easier t
 **Define your adapter**
 
 _config/initializers/ask.rb_
-```
+```ruby
 Get.configure { |config| config.adapter = :active_record }
 ```
 
@@ -228,7 +230,7 @@ Get.configure { |config| config.adapter = :active_record }
 The code below will cause Get classes that begin with _Users_ (ie. `UsersByLastName`) to return a MyCustomEntity instead of the default `Get::Entities::User`.
 
 _config/initializers/ask.rb_
-```
+```ruby
 class MyCustomEntity < Get::Entities::Collection
  def east_london_length
    "#{length}, bruv"
