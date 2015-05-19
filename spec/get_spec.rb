@@ -297,7 +297,12 @@ describe Get do
           employer.sports_cars << sportscar
         end
 
-        it 'returns the correct ancestor' do
+        it 'returns the correct ancestor (single via symbol)' do
+          result = Get::SportsCarsFromUser.run(user, via: :employer)
+          expect(result.first.to_h).to eq sportscar.attributes
+        end
+
+        it 'returns the correct ancestor (array of via symbols)' do
           result = Get::SportsCarsFromUser.run(user, via: [:employer])
           expect(result.first.to_h).to eq sportscar.attributes
         end

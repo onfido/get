@@ -48,7 +48,14 @@ module Get
           end
 
           def via
-            @options[:via] || []
+            case @options[:via]
+            when Symbol
+              [@options[:via]]
+            when Array
+              @options[:via]
+            else
+              []
+            end
           end
         end
       end
