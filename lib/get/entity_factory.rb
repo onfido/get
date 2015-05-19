@@ -5,6 +5,7 @@ module Get
     end
 
     def build(adapter_result)
+      raise ::Get::Errors::RecordNotFound.new unless adapter_result.context
       klass.new(db_result(adapter_result))
     end
 

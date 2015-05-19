@@ -19,6 +19,7 @@ module Get
 
   ASK_CLASS_REGEX = /^(.*)(By|From)(.*)/
 
+
   class << self
     attr_writer :configuration
 
@@ -36,7 +37,7 @@ module Get
 
   def run
     run!
-  rescue ::Get::Errors::Base
+  rescue ::Get::Errors::Base, Get::Errors::RecordNotFound
   end
 
   def run!
