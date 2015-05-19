@@ -8,5 +8,8 @@ module Get
 
     class InvalidAncestry < StandardError
     end
+
+    class RecordNotFound < StandardError
+    end
   end
 end

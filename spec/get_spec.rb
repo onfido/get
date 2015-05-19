@@ -160,6 +160,15 @@ describe Get do
         end
       end
     end
+
+    context 'ancestry' do
+      context 'valid ancestry with no saved parent' do
+        let(:user2) { GetSpec::User.create }
+        it 'returns nil' do
+          expect { Get::EmployerFromUser.run!(user2) }.to raise_error Get::Errors::RecordNotFound
+        end
+      end
+    end
   end
 
   context '#run' do
@@ -261,6 +270,20 @@ describe Get do
         context 'invalid ancestry' do
           it 'throws error' do
             expect { Get::UserFromEmployer.run(employer) }.to raise_error Get::Errors::InvalidAncestry
+          end
+        end
+
+        context 'valid ancestry with no saved childred' do
+          let(:employer2) { GetSpec::Employer.create }
+          it 'returns empty collection error' do
+            expect(Get::UsersFromEmployer.run(employer2).empty?).to be true
+          end
+        end
+
+        context 'valid ancestry with no saved parent' do
+          let(:user2) { GetSpec::User.create }
+          it 'returns nil' do
+            expect(Get::EmployerFromUser.run(user2)).to be nil
           end
         end
       end
