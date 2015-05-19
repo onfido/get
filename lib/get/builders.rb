@@ -1,6 +1,6 @@
 module Get
   module Builders
-    String.include ::Get::CoreExtensions::String
+    String.send(:include, ::Get::CoreExtensions::String)
 
     class << self
       def generate_class(name)
