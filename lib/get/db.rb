@@ -16,6 +16,8 @@ module Get
     def call
       execute_queries
       self.class.entity_factory.build(@query)
+    rescue Horza::Errors::InvalidAncestry
+      raise Get::Errors::InvalidAncestry
     end
 
     private

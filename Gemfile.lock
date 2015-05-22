@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    get (0.1.2)
-      hashie (= 3.4.0)
+    get (0.1.2.1)
+      horza (>= 0.0.1)
 
 GEM
   remote: http://rubygems.org/
@@ -27,6 +27,9 @@ GEM
     columnize (0.9.0)
     diff-lcs (1.2.5)
     hashie (3.4.0)
+    horza (0.0.1)
+      activesupport (>= 2.3.11)
+      hashie (= 3.4.0)
     i18n (0.7.0)
     json (1.8.2)
     minitest (5.6.1)

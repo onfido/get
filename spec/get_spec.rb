@@ -38,14 +38,14 @@ describe Get do
   after(:all) { Get.configuration = @system_config }
 
   # Reset base config with each iteration
-  before { Get.configure { |config| config.adapter = adapter } }
+  before { Get.configure { |config| config.set_adapter(adapter) } }
   after do
     GetSpec::User.delete_all
     GetSpec::Employer.delete_all
     Get.reset
   end
 
-  class MyCustomEntity < Get::Entities::Collection
+  class MyCustomEntity < Horza::Entities::Collection
     def east_london_length
       "#{length}, bruv"
     end
@@ -77,7 +77,7 @@ describe Get do
     context 'when entity has been registered' do
       before do
         Get.configure do |config|
-          config.adapter = adapter
+          config.set_adapter(adapter)
           config.register_entity(:users_by_last_name, MyCustomEntity)
         end
       end
@@ -98,12 +98,12 @@ describe Get do
   context '#adapter' do
     context 'when the adapter is set' do
       it 'returns the correct adapter class' do
-        expect(Get.adapter).to eq Get::Adapters::ActiveRecord
+        expect(Get.adapter).to eq Horza::Adapters::ActiveRecord
       end
     end
 
     context 'when the adapter is not set' do
-      before { Get.configure { |config| config.adapter = nil } }
+      before { Get.reset }
       after { Get.reset }
 
       it 'throws error' do
@@ -115,7 +115,7 @@ describe Get do
   context '#reset' do
     before do
       Get.configure do |config|
-        config.adapter = 'my_adapter'
+        config.set_adapter('my_adapter')
         config.register_entity(:users_by_last_name, MyCustomEntity)
       end
       Get.reset
@@ -138,7 +138,7 @@ describe Get do
           end
 
           it 'returns a dynamically generated response entity' do
-            expect(Get::UserById.run!(user.id).is_a?(Get::Entities::Single)).to be true
+            expect(Get::UserById.run!(user.id).is_a?(Horza::Entities::Single)).to be true
           end
         end
 
@@ -149,7 +149,7 @@ describe Get do
           end
 
           it 'returns a dynamically generated response entity' do
-            expect(Get::UserBy.run!(last_name: last_name).is_a?(Get::Entities::Single)).to be true
+            expect(Get::UserBy.run!(last_name: last_name).is_a?(Horza::Entities::Single)).to be true
           end
         end
       end
@@ -183,7 +183,7 @@ describe Get do
           end
 
           it 'returns a dynamically generated response entity' do
-            expect(Get::UserById.run(user.id).is_a?(Get::Entities::Single)).to be true
+            expect(Get::UserById.run(user.id).is_a?(Horza::Entities::Single)).to be true
           end
         end
 
@@ -194,7 +194,7 @@ describe Get do
           end
 
           it 'returns a dynamically generated response entity' do
-            expect(Get::UserBy.run(last_name: last_name).is_a?(Get::Entities::Single)).to be true
+            expect(Get::UserBy.run(last_name: last_name).is_a?(Horza::Entities::Single)).to be true
           end
         end
       end
@@ -224,7 +224,7 @@ describe Get do
           end
 
           it 'returns a dynamically generated response entity' do
-            expect(Get::UsersByLastName.run(last_name).is_a?(Get::Entities::Collection)).to be true
+            expect(Get::UsersByLastName.run(last_name).is_a?(Horza::Entities::Collection)).to be true
           end
         end
 
@@ -235,7 +235,7 @@ describe Get do
           end
 
           it 'returns a dynamically generated response entity' do
-            expect(Get::UsersBy.run(last_name: last_name).is_a?(Get::Entities::Collection)).to be true
+            expect(Get::UsersBy.run(last_name: last_name).is_a?(Horza::Entities::Collection)).to be true
           end
         end
       end
@@ -314,7 +314,7 @@ end
 describe Get::Builders::AncestryBuilder do
   let(:name) { 'UserFromEmployer' }
 
-  before { Get.configure { |config| config.adapter = :active_record } }
+  before { Get.configure { |config| config.set_adapter(:active_record) } }
   after { Get.reset }
 
   subject { Get::Builders::AncestryBuilder.new(name) }
@@ -335,7 +335,7 @@ end
 describe Get::Builders::QueryBuilder do
   let(:name) { 'UserFromEmployer' }
 
-  before { Get.configure { |config| config.adapter = :active_record } }
+  before { Get.configure { |config| config.set_adapter(:active_record) } }
   after { Get.reset }
 
   subject { Get::Builders::QueryBuilder.new(name) }

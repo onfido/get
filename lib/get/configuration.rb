@@ -15,15 +15,11 @@ module Get
 
     def adapter
       raise ::Get::Errors::Base.new('Adapter has not been configured') unless configuration.adapter
-      @adapter ||= adapter_map[configuration.adapter]
+      @adapter ||= configuration.adapter
     end
 
     def entity_for(model)
       configuration.entity_for(model)
-    end
-
-    def adapter_map
-      @adapter_map ||= ::Get::Adapters::AbstractAdapter.descendants.reduce({}) { |hash, (klass)| hash.merge(klass.name.split('::').last.underscore.to_sym => klass) }
     end
   end
 
@@ -32,6 +28,11 @@ module Get
 
     def initialize
       @registered_entities = {}
+    end
+
+    def set_adapter(adapter)
+      Horza.configure { |config| config.adapter = adapter }
+      @adapter = Horza.adapter
     end
 
     def entity_for(model)

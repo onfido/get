@@ -6,7 +6,7 @@ module Get
       def const_missing(name)
         return super(name) unless name.to_s.match(/^#{CLASS_PREFIX}/)
 
-        parent_klass = name.to_s.plural? ? Get::Entities::Collection : Get::Entities::Single
+        parent_klass = name.to_s.plural? ? Horza::Entities::Collection : Horza::Entities::Single
         Get::Entities.const_set(name, Class.new(parent_klass))
       end
     end

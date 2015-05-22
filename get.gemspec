@@ -3,7 +3,7 @@ require 'orm_adapter/version'
 
 Gem::Specification.new do |s|
   s.name = 'get'
-  s.version = '0.1.2.1'
+  s.version = '0.1.3.0'
   s.platform = Gem::Platform::RUBY
   s.authors = ['Blake Turner']
   s.description = 'Encapsulate your database queries with dynamically generated classes'
@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.test_files    = Dir.glob("{spec}/**/*")
   s.require_paths = ['lib']
 
-  s.add_runtime_dependency 'hashie', '3.4.0'
+  s.add_runtime_dependency 'horza', '>= 0.0.1'
 
   s.add_development_dependency 'bundler', '>= 1.0.0'
   s.add_development_dependency 'activerecord', '>= 3.2.15'
