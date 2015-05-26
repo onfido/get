@@ -2,7 +2,9 @@ module Get
   module Builders
     class BaseBuilder
       def initialize(class_name)
-        parse_class_name(class_name)
+        parser = ::Get::Parser.new(class_name)
+        @result_entity = parser.result_entity
+        @key = parser.key
       end
 
       def class

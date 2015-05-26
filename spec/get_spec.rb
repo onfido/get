@@ -352,3 +352,31 @@ describe Get::Builders::QueryBuilder do
     end
   end
 end
+
+describe Get::Parser do
+  let(:ancestry_name) { 'UserFromEmployer' }
+  let(:query_name) { 'UserFromEmployer' }
+
+  subject { Get::Parser }
+
+  describe '#match?' do
+    context 'when name is of ancestry type' do
+      it 'returns true' do
+        expect(subject.new(ancestry_name).match?).to be true
+      end
+    end
+
+    context 'when name is of query type' do
+      it 'returns true' do
+        expect(subject.new(query_name).match?).to be true
+      end
+    end
+
+    context 'when name is of no type' do
+      it 'returns false' do
+        expect(subject.new('Blablabla').match?).to be false
+      end
+    end
+
+  end
+end

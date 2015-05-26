@@ -5,6 +5,7 @@ require 'get/builders'
 require 'get/configuration'
 require 'get/db'
 require 'get/errors'
+require 'get/parser'
 require 'get/run_methods'
 require 'horza'
 
@@ -23,8 +24,9 @@ module Get
     end
 
     def const_missing(name)
-      return super(name) unless name.to_s.match(GET_CLASS_REGEX)
-      Builders.generate_class(name)
+      parser = ::Get::Parser.new(name)
+      return super(name) unless parser.match?
+      Builders.generate_class(name, parser.method)
     end
   end
 
