@@ -30,11 +30,11 @@ module Get
           private
 
           def query_params
-            { query_action => { conditions: conditions } }
+            { query_action => conditions }
           end
 
           def query_action
-            self.class.collection ? :find_all : :find_first
+            self.class.collection ? :find_all : :find_first!
           end
 
           # find_first

@@ -10,12 +10,11 @@ module Get
 
     def initialize(actions)
       @actions = actions
-      @query = Get.adapter.new(self.class.store)
+      @adapter = Get.adapter.new(self.class.store)
     end
 
     def call
       execute_queries
-      self.class.entity_factory.build(@query)
     rescue Horza::Errors::InvalidAncestry
       raise Get::Errors::InvalidAncestry
     end
@@ -23,9 +22,11 @@ module Get
     private
 
     def execute_queries
+      res = nil
       @actions.each do |action, options|
-        @query.send(action, options)
+        res = @adapter.send(action, options)
       end
+      res
     end
   end
 end

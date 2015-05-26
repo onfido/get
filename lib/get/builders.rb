@@ -1,7 +1,5 @@
 module Get
   module Builders
-    String.send(:include, ::Get::CoreExtensions::String)
-
     class << self
       def generate_class(name)
         method = name.to_s.match(GET_CLASS_REGEX)[2]

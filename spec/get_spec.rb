@@ -51,27 +51,27 @@ describe Get do
     end
   end
 
-  describe '#configure' do
-    context '#register_entity' do
-      let(:user_count) { 3 }
-
-      before do
-        Get.configure { |config| config.register_entity(:users_by_last_name, MyCustomEntity) }
-        user_count.times { GetSpec::User.create(last_name: last_name) }
-      end
-      after { Get.reset }
-
-      it 'gets registers entity' do
-        expect(Get.configuration.entity_for(:users_by_last_name)).to eq MyCustomEntity
-      end
-
-      it 'returns specified entity type after querying db' do
-        result = Get::UsersByLastName.run(last_name)
-        expect(result.is_a? MyCustomEntity).to be true
-        expect(result.east_london_length).to eq "#{user_count}, bruv"
-      end
-    end
-  end
+  # describe '#configure' do
+  #   context '#register_entity' do
+  #     let(:user_count) { 3 }
+  #
+  #     before do
+  #       Get.configure { |config| config.register_entity(:users_by_last_name, MyCustomEntity) }
+  #       user_count.times { GetSpec::User.create(last_name: last_name) }
+  #     end
+  #     after { Get.reset }
+  #
+  #     it 'gets registers entity' do
+  #       expect(Get.configuration.entity_for(:users_by_last_name)).to eq MyCustomEntity
+  #     end
+  #
+  #     it 'returns specified entity type after querying db' do
+  #       result = Get::UsersByLastName.run(last_name)
+  #       expect(result.is_a? MyCustomEntity).to be true
+  #       expect(result.east_london_length).to eq "#{user_count}, bruv"
+  #     end
+  #   end
+  # end
 
   context '#entity_for' do
     context 'when entity has been registered' do
@@ -165,7 +165,7 @@ describe Get do
       context 'valid ancestry with no saved parent' do
         let(:user2) { GetSpec::User.create }
         it 'returns nil' do
-          expect { Get::EmployerFromUser.run!(user2) }.to raise_error Get::Errors::RecordNotFound
+          expect(Get::EmployerFromUser.run!(user2)).to be nil
         end
       end
     end
@@ -325,7 +325,7 @@ describe Get::Builders::AncestryBuilder do
     end
 
     it 'correctly assigns class-level variables' do
-      [:entity, :query_key, :collection, :store, :result_key].each do |class_var|
+      [:entity, :query_key, :collection, :store, :target].each do |class_var|
         expect(subject.class.respond_to? class_var).to be true
       end
     end

@@ -17,10 +17,10 @@ module Get
           include Get
 
           class << self
-            attr_reader :result_key
+            attr_reader :target
           end
 
-          @entity, @result_key, @collection, @store = args[:key], args[:result_entity], args[:collection], args[:store]
+          @entity, @target, @collection, @store = args[:key], args[:result_entity], args[:collection], args[:store]
 
           def initialize(model, options = {})
             @model, @options = model, options
@@ -43,7 +43,7 @@ module Get
             {
               id: id,
               via: via,
-              result_key: self.class.result_key
+              target: self.class.target
             }
           end
 
