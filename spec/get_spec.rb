@@ -51,50 +51,6 @@ describe Get do
     end
   end
 
-  # describe '#configure' do
-  #   context '#register_entity' do
-  #     let(:user_count) { 3 }
-  #
-  #     before do
-  #       Get.configure { |config| config.register_entity(:users_by_last_name, MyCustomEntity) }
-  #       user_count.times { GetSpec::User.create(last_name: last_name) }
-  #     end
-  #     after { Get.reset }
-  #
-  #     it 'gets registers entity' do
-  #       expect(Get.configuration.entity_for(:users_by_last_name)).to eq MyCustomEntity
-  #     end
-  #
-  #     it 'returns specified entity type after querying db' do
-  #       result = Get::UsersByLastName.run(last_name)
-  #       expect(result.is_a? MyCustomEntity).to be true
-  #       expect(result.east_london_length).to eq "#{user_count}, bruv"
-  #     end
-  #   end
-  # end
-
-  context '#entity_for' do
-    context 'when entity has been registered' do
-      before do
-        Get.configure do |config|
-          config.set_adapter(adapter)
-          config.register_entity(:users_by_last_name, MyCustomEntity)
-        end
-      end
-      after { Get.reset }
-
-      it 'registers entity' do
-        expect(Get.entity_for(:users_by_last_name)).to eq MyCustomEntity
-      end
-    end
-
-    context 'when entity has not been registered' do
-      it 'returns nil' do
-        expect(Get.entity_for(:users_by_last_name)).to be nil
-      end
-    end
-  end
-
   context '#adapter' do
     context 'when the adapter is set' do
       it 'returns the correct adapter class' do
@@ -116,13 +72,11 @@ describe Get do
     before do
       Get.configure do |config|
         config.set_adapter('my_adapter')
-        config.register_entity(:users_by_last_name, MyCustomEntity)
       end
       Get.reset
     end
     it 'resets the config' do
       expect(Get.configuration.adapter).to be nil
-      expect(Get.entity_for(:users_by_last_name)).to be nil
     end
   end
 

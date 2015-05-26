@@ -3,7 +3,7 @@ require 'orm_adapter/version'
 
 Gem::Specification.new do |s|
   s.name = 'get'
-  s.version = '0.1.3.0'
+  s.version = '0.1.4.0'
   s.platform = Gem::Platform::RUBY
   s.authors = ['Blake Turner']
   s.description = 'Encapsulate your database queries with dynamically generated classes'

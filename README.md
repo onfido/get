@@ -139,23 +139,14 @@ but UserFromEmployer will throw `Get::Errors::InvalidAncestry`.
 
 ## Entities
 
-Ironically, one of the "features" of Get is its removal of the ability to query associations from the query response object.
+Ironically, one of the "features" of Get is its removal of the ability to query associations from the ORM response object.
 This choice was made to combat query pollution throughout the app, particularly in the view layer.
 
-To achieve this, Get returns **entities** instead of ORM  objects (`ActiveRecord::Base`, etc.).
-These entity classes are generated at runtime with names appropriate to their contents.
-You can also register your own entities in the Get config.
-
-```ruby
->> result = Get::UserById.run(user.id)
->> result.class.name
->> "Get::Entities::GetUser"
-```
+To achieve this, Get returns Horza Entities instead of ORM  objects (`ActiveRecord::Base`, etc.).
+See the [Horza Readme](https://github.com/onfido/horza) for instructions on how to create your own entities.
 
 Individual entities will have all attributes accessible via dot notation and hash notation, but attempts to get associations will fail.
 Collections have all of the common enumerator methods: `first`, `last`, `each`, and `[]`.
-
-Dynamically generated Get::Entities are prefixed with `Get` to avoid colliding with your ORM objects.
 
 ## Testing
 
@@ -178,7 +169,7 @@ def index
 end
 ```
 
-The above methods do the exact same thing. Cool, let's test them:
+The above methods do pretty much the exact same thing (the only difference is that the second example returns a Horza Entity instead of an ORM object). Cool, let's test them:
 
 ```ruby
 # sportscars_controller.rb
@@ -202,7 +193,7 @@ describe SportscarsController, type: :controller do
 
     context 'Get' do
       let(:user) { FactoryGirl.build_stubbed(:user, employer: employer) }
-      let(:sportscars) { 3.times { FactoryGirl.build_stubbed(:sportscars) } }
+      let(:sportscars) { 3.times { Horza::Entities::Single.new(FactoryGirl.attributes_for(:sportscars)) } }
 
       before do
         allow(Get::SportscarsFromUser).to receive(:run).and_return(sportscars)
@@ -229,24 +220,6 @@ _config/initializers/ask.rb_
 ```ruby
 Get.configure { |config| config.adapter = :active_record }
 ```
-
-**Configure custom entities**
-
-The code below will cause Get classes that begin with _Users_ (ie. `UsersByLastName`) to return a MyCustomEntity instead of the default `Get::Entities::User`.
-
-_config/initializers/ask.rb_
-```ruby
-class MyCustomEntity < Get::Entities::Collection
- def east_london_length
-   "#{length}, bruv"
- end
-end
-
-Get.config do |config|
- config.register_entity(:users_by_last_name, MyCustomEntity)
-end
-```
-
 You can reset the config at any time using `Get.reset`.
 
 ## Adapters
