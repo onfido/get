@@ -11,5 +11,8 @@ module Get
 
     class RecordNotFound < StandardError
     end
+
+    class InvalidClassName < StandardError
+    end
   end
 end

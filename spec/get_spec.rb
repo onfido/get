@@ -312,6 +312,8 @@ describe Get::Parser do
   let(:query_name) { 'UserFromEmployer' }
 
   subject { Get::Parser }
+  before { Get.configure { |config| config.set_adapter(:active_record) } }
+  after { Get.reset }
 
   describe '#match?' do
     context 'when name is of ancestry type' do
@@ -331,6 +333,11 @@ describe Get::Parser do
         expect(subject.new('Blablabla').match?).to be false
       end
     end
+  end
 
+  context 'two instances of "By" in class name' do
+    it 'throws error' do
+      expect { subject.new('UserByInvitedByType') }.to raise_error Get::Errors::InvalidClassName
+    end
   end
 end
