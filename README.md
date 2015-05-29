@@ -228,6 +228,8 @@ Get currently works with ActiveRecord.
 
 ## Edge Cases
 
+**Attributes containing 'By'**
+
 Some attributes contain the word 'by', ie. `Customer.invited_by`.
 Because of the way Get parses classnames, you won't be able to use the attribute-specific format.
 Use the more general form instead.
@@ -235,6 +237,18 @@ Use the more general form instead.
 ```
 Get::CustomerByInvitedBy.run('John') #=> throws Get::Errors::InvalidClassName
 Get::CustomerBy.run(invited_by: 'John') #=> will work
+```
+
+**Models ending with double 's'**
+
+Some models end with a double 's', ie `Address`, `Business`. Rails has a well documented inability to properly inflect this type of word.
+There is a simple fix:
+
+```ruby
+# config/initializers/inflections.rb
+ActiveSupport::Inflector.inflections do |inflect|
+  inflect.singular(/ess$/i, 'ess')
+end
 ```
 
 ## Benchmarking
