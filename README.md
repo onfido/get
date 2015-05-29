@@ -226,6 +226,17 @@ You can reset the config at any time using `Get.reset`.
 
 Get currently works with ActiveRecord.
 
+## Edge Cases
+
+Some attributes contain the word 'by', ie. `Customer.invited_by`.
+Because of the way Get parses classnames, you won't be able to use the attribute-specific format.
+Use the more general form instead.
+
+```
+Get::CustomerByInvitedBy.run('John') #=> throws Get::Errors::InvalidClassName
+Get::CustomerBy.run(invited_by: 'John') #=> will work
+```
+
 ## Benchmarking
 
 Get requests generally run < 1ms slower than ActiveRecord requests.
