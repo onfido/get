@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    get (0.1.5.0)
+    get (0.1.5.1)
       horza (~> 0.2.1)
 
 GEM
@@ -27,12 +27,12 @@ GEM
     columnize (0.9.0)
     diff-lcs (1.2.5)
     hashie (3.4.0)
-    horza (0.2.1)
+    horza (0.2.2)
       activesupport (>= 2.3.11)
       hashie (= 3.4.0)
     i18n (0.7.0)
-    json (1.8.2)
-    minitest (5.6.1)
+    json (1.8.3)
+    minitest (5.7.0)
     rspec (3.2.0)
       rspec-core (~> 3.2.0)
       rspec-expectations (~> 3.2.0)

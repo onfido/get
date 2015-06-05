@@ -37,7 +37,7 @@ module Get
 
   def run!
     call
-  rescue *Get.adapter.expected_errors => e
+  rescue *Get.adapter.expected_horza_errors => e
     raise ::Get::Errors::Base.new(e.message)
   end
 end
