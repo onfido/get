@@ -51,6 +51,22 @@ describe Get do
     end
   end
 
+  context 'development_mode' do
+    before do
+      Get.reset
+      Get.configure do |config|
+        config.set_adapter('my_adapter')
+        config.development_mode
+      end
+    end
+    after do
+      Get.reset
+    end
+    it 'sets Horza to development mode' do
+      expect(Horza.configuration.development_mode).to be true
+    end
+  end
+
   context '#adapter' do
     context 'when the adapter is set' do
       it 'returns the correct adapter class' do
