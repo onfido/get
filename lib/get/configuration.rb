@@ -20,11 +20,15 @@ module Get
   end
 
   class Config
-    attr_accessor :adapter
+    attr_accessor :adapter, :environment
 
     def set_adapter(adapter)
       Horza.configure { |config| config.adapter = adapter }
       @adapter = Horza.adapter
+    end
+
+    def development_mode
+      Horza.configure { |config| config.development_mode = true }
     end
   end
 end
