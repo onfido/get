@@ -22,15 +22,15 @@ module Get
 
           @field, @entity, @collection, @store = args[:key], args[:result_entity], args[:collection], args[:store]
 
-          def initialize(params)
-            @params = params
+          def initialize(params, options = {})
+            @params, @options = params, options
             super(query_params)
           end
 
           private
 
           def query_params
-            { query_action => conditions }
+            { query_action => conditions.merge(@options) }
           end
 
           def query_action
@@ -39,13 +39,8 @@ module Get
 
           # find_first
           def conditions
-            return @params unless self.class.field
-            { self.class.field => @params }
-          end
-
-          def single_params
-            return {} if self.class.collection
-            { limit: 1, first: true }
+            return { conditions: @params } unless self.class.field
+            { conditions: { self.class.field => @params } }
           end
         end
       end

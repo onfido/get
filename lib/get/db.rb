@@ -2,10 +2,6 @@ module Get
   class Db
     class << self
       attr_accessor :entity, :query_key, :collection, :store
-
-      def entity_factory
-        @factory ||= EntityFactory.new(entity, name, collection, query_key)
-      end
     end
 
     def initialize(actions)
