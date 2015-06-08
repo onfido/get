@@ -354,6 +354,13 @@ describe Get do
             expect(result.last.id).to eq ar_result.last.id
           end
         end
+
+        context 'when eager_load is passed' do
+          it 'behaves as expected' do
+            result = Get::UsersFromEmployer.run(employer.id, conditions: { last_name: last_name }, eager_load: true)
+            expect(result.length).to eq match_count
+          end
+        end
       end
     end
   end
