@@ -35,7 +35,7 @@ module Get
 
           def ancestor_params
             # Add options to hash only if they exist - empty objects/nil values can wreak havoc
-            [:conditions, :limit, :offset, :order].reduce(required_params) do |params, key|
+            [:conditions, :limit, :offset, :order, :eager_load].reduce(required_params) do |params, key|
               @options[key] ? params.merge(key => @options[key]) : params
             end
           end
