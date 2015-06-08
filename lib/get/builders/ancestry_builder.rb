@@ -29,22 +29,28 @@ module Get
 
           private
 
-          def id
-            return @model.id if @model.respond_to? :id
-            @model
-          end
-
           def query_params
-            options = @options.except(:via) || {}
-            { ancestors: ancestor_params }.merge(options)
+            { association: ancestor_params }
           end
 
           def ancestor_params
+            # Add options to hash only if they exist - empty objects/nil values can wreak havoc
+            [:conditions, :limit, :offset, :order].reduce(required_params) do |params, key|
+              @options[key] ? params.merge(key => @options[key]) : params
+            end
+          end
+
+          def required_params
             {
               id: id,
               via: via,
               target: self.class.target
             }
+          end
+
+          def id
+            return @model.id if @model.respond_to? :id
+            @model
           end
 
           def via

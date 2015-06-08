@@ -2,6 +2,92 @@
 
 Dynamically generate classes to encapsulate common database queries in Rails.
 
+## Usage
+
+#### Singular Queries - Return a single record
+
+With field being queried in the class name
+```ruby
+Get::UserById.run(123)
+```
+
+Fail loudly
+```ruby
+Get::UserById.run!(123)
+```
+
+Slightly more flexible model:
+```ruby
+Get::UserBy.run(id: 123, employer_id: 88)
+```
+
+#### Plural Queries - Return a collection of records
+
+_Note the plurality of 'Users'_
+```ruby
+Get::UsersByLastName.run('Turner')
+```
+
+With Options
+```ruby
+Get::UsersByLastName.run('Turner', limit: 10, offset: 20, order: { last_name: :desc })
+```
+
+#### Associations
+
+Associations use 'From', and are sugar for the chains we so often write in rails.
+
+_You can pass either an entity or an id, the only requirement is that it responds to #id_
+
+Parent relationship (user.employer):
+```ruby
+Get::EmployerFromUser.run(user)
+```
+
+Child relationship (employer.users):
+```ruby
+Get::UsersFromEmployer.run(employer_id)
+```
+
+Complex relationship (user.employer.sportscars)
+```ruby
+Get::SportscarsFromUser.run(user, via: :employer)
+```
+
+Eager Loading
+```ruby
+Get::SportscarsFromUser.run(user, via: :employer, eager_load: true)
+```
+
+Query Associations
+```ruby
+Get::SportscarsFromUser.run(user, via: :employer, conditions: { make: 'Audi' }, limit: 10, offset: 20)
+```
+
+Keep the plurality of associations in mind. If an Employer has many Users, UsersFromEmployer works,
+but UserFromEmployer will throw `Get::Errors::InvalidAncestry`.
+
+## Options
+
+**Base Options**
+
+Key | Type | Details
+--- | ---- | -------
+`order` | Hash | { `field` => `:asc`/`:desc` }
+`limit` | Integer | Number of records to return
+`offset` | Integer | Number of records to offset
+`id` | Integer | The id of the root object (associations only)
+`target` | Symbol | The target of the association - ie. employer.users would have a target of :users (associations only)
+`eager_load` | Boolean | Whether to eager_load the association (associations only)
+
+**Association Options**
+
+Key | Type | Details
+--- | ---- | -------
+`conditions` | Hash | Key value pairs for the query
+`eager_load` | Boolean | Whether to eager_load the association
+`via` | [Symbol] | The associations that need to be traversed in order to reach the desired record(s). These must be in the correct order, ie user.employer.parent.children would be Get::ChildrenFromUser.run(user_id, via: [:employer, :parent]). You can also pass a single symbol instead of an array of length 1.
+
 ## Why is this necessary?
 
 #### Problem 1: Encapsulation
@@ -86,56 +172,6 @@ Get identifies four themes in common queries:
 - **Association**: Query traverses the associations of the given model and returns a different model
 
 These themes are not mutually exclusive; **Query** and **Association** can be either **Singular** or **Plural**.
-
-## Usage
-
-#### Singular Queries - Return a single record
-
-With field being queried in the class name
-```ruby
-Get::UserById.run(123)
-```
-
-Fail loudly
-```ruby
-Get::UserById.run!(123)
-```
-
-Slightly more flexible model:
-```ruby
-Get::UserBy.run(id: 123, employer_id: 88)
-```
-
-#### Plural Queries - Return a collection of records
-
-_Note the plurality of 'Users'_
-```ruby
-Get::UsersByLastName.run('Turner')
-```
-
-#### Associations
-
-Associations use 'From', and are sugar for the chains we so often write in rails.
-
-_You can pass either an entity or an id, the only requirement is that it responds to #id_
-
-Parent relationship (user.employer):
-```ruby
-Get::EmployerFromUser.run(user)
-```
-
-Child relationship (employer.users):
-```ruby
-Get::UsersFromEmployer.run(employer_id)
-```
-
-Complex relationship (user.employer.sportscars)
-```ruby
-Get::SportscarsFromUser.run(user, via: :employer)
-```
-
-Keep the plurality of associations in mind. If an Employer has many Users, UsersFromEmployer works,
-but UserFromEmployer will throw `Get::Errors::InvalidAncestry`.
 
 ## Entities
 
@@ -234,7 +270,7 @@ Some attributes contain the word 'by', ie. `Customer.invited_by`.
 Because of the way Get parses classnames, you won't be able to use the attribute-specific format.
 Use the more general form instead.
 
-```
+```ruby
 Get::CustomerByInvitedBy.run('John') #=> throws Get::Errors::InvalidClassName
 Get::CustomerBy.run(invited_by: 'John') #=> will work
 ```

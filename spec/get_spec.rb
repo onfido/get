@@ -210,6 +210,41 @@ describe Get do
         end
       end
 
+      context 'with options' do
+        let(:last_name) { 'Turner' }
+        let(:match_count) { 20 }
+        let(:miss_count) { 7 }
+
+        before do
+          match_count.times { GetSpec::User.create(last_name: last_name)  }
+          miss_count.times { GetSpec::User.create }
+        end
+
+        context 'when limit is passed' do
+          it 'limits the records' do
+            result = Get::UsersBy.run({ last_name: last_name }, limit: 2)
+            expect(result.length).to eq 2
+          end
+        end
+
+        context 'when offset is passed' do
+          it 'offsets the response' do
+            result = Get::UsersBy.run({ last_name: last_name }, offset: 5)
+            expect(result.length).to eq 15
+          end
+        end
+
+        context 'when order is passed' do
+          it 'orders the response' do
+            result = Get::UsersBy.run({ last_name: last_name }, order: { id: :asc })
+            ar_result = GetSpec::User.where(last_name: last_name).order('id asc')
+
+            expect(result.first.id).to eq ar_result.first.id
+            expect(result.last.id).to eq ar_result.last.id
+          end
+        end
+      end
+
       context 'when no records exist' do
         it 'returns empty collection' do
           expect(Get::UsersBy.run(last_name: last_name).empty?).to be true
@@ -217,7 +252,7 @@ describe Get do
       end
     end
 
-    context 'ancestry' do
+    context 'associations' do
       context 'direct relation' do
         let(:employer) { GetSpec::Employer.create }
         let!(:user1) { GetSpec::User.create(employer: employer) }
@@ -232,8 +267,9 @@ describe Get do
         context 'ChildrenFromParent' do
           it 'returns children' do
             result = Get::UsersFromEmployer.run(employer)
-            expect(result.first.to_h).to eq user1.attributes
-            expect(result.last.to_h).to eq user2.attributes
+            ar_result = GetSpec::User.where(employer_id: employer.id).order('id desc')
+            expect(result.first.id).to eq ar_result.first.id
+            expect(result.last.id).to eq ar_result.last.id
           end
         end
 
@@ -275,6 +311,48 @@ describe Get do
         it 'returns the correct ancestor (array of via symbols)' do
           result = Get::SportsCarsFromUser.run(user, via: [:employer])
           expect(result.first.to_h).to eq sportscar.attributes
+        end
+      end
+
+      context 'with options' do
+        let(:employer) { GetSpec::Employer.create }
+        let(:match_count) { 20 }
+        let(:miss_count) { 7 }
+
+        before do
+          match_count.times { employer.users << GetSpec::User.create(employer: employer, last_name: last_name) }
+          miss_count.times { employer.users << GetSpec::User.create(employer: employer) }
+        end
+
+        context 'when conditions are passed' do
+          it 'filters response' do
+            result = Get::UsersFromEmployer.run(employer.id, conditions: { last_name: last_name })
+            expect(result.length).to eq match_count
+          end
+        end
+
+        context 'when limit is passed' do
+          it 'limits response' do
+            result = Get::UsersFromEmployer.run(employer.id, conditions: { last_name: last_name }, limit: 5)
+            expect(result.length).to eq 5
+          end
+        end
+
+        context 'when offset is passed' do
+          it 'offsets response' do
+            result = Get::UsersFromEmployer.run(employer.id, conditions: { last_name: last_name }, offset: 16)
+            expect(result.length).to eq match_count - 16
+          end
+        end
+
+        context 'when order is passed' do
+          it 'orders response' do
+            result = Get::UsersFromEmployer.run(employer.id, conditions: { last_name: last_name }, order: { id: :asc })
+            ar_result = GetSpec::User.where(employer_id: employer.id, last_name: last_name).order('id asc')
+
+            expect(result.first.id).to eq ar_result.first.id
+            expect(result.last.id).to eq ar_result.last.id
+          end
         end
       end
     end
