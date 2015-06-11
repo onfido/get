@@ -67,6 +67,22 @@ describe Get do
     end
   end
 
+  context 'namespaces' do
+    before do
+      Get.reset
+      Get.configure do |config|
+        config.set_adapter('my_adapter')
+        config.set_namespaces [GetSpec]
+      end
+    end
+    after do
+      Get.reset
+    end
+    it 'sets Horza to development mode' do
+      expect(Horza.configuration.namespaces).to eq [GetSpec]
+    end
+  end
+
   context '#adapter' do
     context 'when the adapter is set' do
       it 'returns the correct adapter class' do

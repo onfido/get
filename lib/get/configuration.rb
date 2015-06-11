@@ -30,5 +30,10 @@ module Get
     def development_mode
       Horza.configure { |config| config.development_mode = true }
     end
+
+    def set_namespaces(namespaces)
+      raise ::Get::Errors::Base.new('namespaces must be an array') unless namespaces.is_a? Array
+      Horza.configure { |config| config.namespaces = namespaces }
+    end
   end
 end
