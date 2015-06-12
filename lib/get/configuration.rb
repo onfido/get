@@ -22,16 +22,16 @@ module Get
   class Config
     attr_accessor :adapter, :environment
 
-    def set_adapter(adapter)
+    def adapter=(adapter)
       Horza.configure { |config| config.adapter = adapter }
       @adapter = Horza.adapter
     end
 
-    def development_mode
-      Horza.configure { |config| config.development_mode = true }
+    def development_mode=(mode)
+      Horza.configure { |config| config.development_mode = mode }
     end
 
-    def set_namespaces(namespaces)
+    def namespaces=(namespaces)
       raise ::Get::Errors::Base.new('namespaces must be an array') unless namespaces.is_a? Array
       Horza.configure { |config| config.namespaces = namespaces }
     end

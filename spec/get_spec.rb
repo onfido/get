@@ -38,7 +38,7 @@ describe Get do
   after(:all) { Get.configuration = @system_config }
 
   # Reset base config with each iteration
-  before { Get.configure { |config| config.set_adapter(adapter) } }
+  before { Get.configure { |config| config.adapter = adapter } }
   after do
     GetSpec::User.delete_all
     GetSpec::Employer.delete_all
@@ -55,8 +55,8 @@ describe Get do
     before do
       Get.reset
       Get.configure do |config|
-        config.set_adapter('my_adapter')
-        config.development_mode
+        config.adapter = 'my_adapter'
+        config.development_mode = true
       end
     end
     after do
@@ -71,8 +71,8 @@ describe Get do
     before do
       Get.reset
       Get.configure do |config|
-        config.set_adapter('my_adapter')
-        config.set_namespaces [GetSpec]
+        config.adapter = 'my_adapter'
+        config.namespaces =  [GetSpec]
       end
     end
     after do
@@ -103,7 +103,7 @@ describe Get do
   context '#reset' do
     before do
       Get.configure do |config|
-        config.set_adapter('my_adapter')
+        config.adapter = 'my_adapter'
       end
       Get.reset
     end
@@ -385,7 +385,7 @@ end
 describe Get::Builders::AncestryBuilder do
   let(:name) { 'UserFromEmployer' }
 
-  before { Get.configure { |config| config.set_adapter(:active_record) } }
+  before { Get.configure { |config| config.adapter = :active_record } }
   after { Get.reset }
 
   subject { Get::Builders::AncestryBuilder.new(name) }
@@ -406,7 +406,7 @@ end
 describe Get::Builders::QueryBuilder do
   let(:name) { 'UserFromEmployer' }
 
-  before { Get.configure { |config| config.set_adapter(:active_record) } }
+  before { Get.configure { |config| config.adapter = :active_record } }
   after { Get.reset }
 
   subject { Get::Builders::QueryBuilder.new(name) }
@@ -429,7 +429,7 @@ describe Get::Parser do
   let(:query_name) { 'UserFromEmployer' }
 
   subject { Get::Parser }
-  before { Get.configure { |config| config.set_adapter(:active_record) } }
+  before { Get.configure { |config| config.adapter = :active_record } }
   after { Get.reset }
 
   describe '#match?' do
