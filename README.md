@@ -313,7 +313,7 @@ This will speed up tests (a little), but more importantly it makes them easier t
 
 **Define your adapter**
 
-_config/initializers/ask.rb_
+_config/initializers/get.rb_
 ```ruby
 Get.configure { |config| config.adapter = :active_record }
 ```
