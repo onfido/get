@@ -111,7 +111,7 @@ join_params = {
   on: [
     { employer_id: :id }, # base_table(users).employer_id = join_table(employers).id
     { email: :email }, # base_table(users).email = join_table(employers).email
-  ]
+  ],
   fields: {
     users: [:id, { first_name: :my_alias_for_first_name }],
     employers: [:email, { id: :my_alias_for_employer_id }]
