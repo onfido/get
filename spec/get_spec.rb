@@ -379,6 +379,69 @@ describe Get do
         end
       end
     end
+
+    context 'joins' do
+      let(:employer) { GetSpec::Employer.create }
+      let(:employer2) { GetSpec::Employer.create }
+      let(:match_count) { 20 }
+      let(:miss_count) { 7 }
+
+      before do
+        match_count.times { employer2.users << GetSpec::User.create(employer: employer2) }
+        miss_count.times { employer.users << GetSpec::User.create(employer: employer) }
+      end
+
+      context 'when no conditions are passed' do
+        let(:join_params) do
+          {
+            on: { employer_id: :id } # field for adapted model => field for join model
+          }
+        end
+
+        it 'returns match_count + miss_count joines records' do
+          result = Get::UsersJoinedWithEmployers.run(join_params)
+          expect(result.length).to eq match_count + miss_count
+        end
+      end
+
+      context 'when conditions are passed' do
+        let(:join_params) do
+          {
+            on: { employer_id: :id }, # field for adapted model => field for join model
+            conditions: {
+              employers: { id: employer2.id }
+            }
+          }
+        end
+
+        it 'returns match_count joined records' do
+          result = Get::UsersJoinedWithEmployers.run(join_params)
+          expect(result.length).to eq match_count
+        end
+      end
+
+      context 'when conditions and fields are passed' do
+        let(:join_params) do
+          {
+            on: { employer_id: :id }, # field for adapted model => field for join model
+            conditions: {
+              employers: { id: employer2.id }
+            },
+            fields: {
+              users: [:id],
+              employers: [{id: :my_employer_id}]
+            }
+          }
+        end
+
+        it 'returns match_count joined records' do
+          result = Get::UsersJoinedWithEmployers.run(join_params)
+          expect(result.length).to eq match_count
+          expect(result.first.my_employer_id).to eq employer2.id
+        end
+      end
+
+    end
   end
 end
 
@@ -427,6 +490,7 @@ end
 describe Get::Parser do
   let(:ancestry_name) { 'UserFromEmployer' }
   let(:query_name) { 'UserFromEmployer' }
+  let(:join_name) { 'UsersJoinedWithEmployers' }
 
   subject { Get::Parser }
   before { Get.configure { |config| config.adapter = :active_record } }
@@ -442,6 +506,12 @@ describe Get::Parser do
     context 'when name is of query type' do
       it 'returns true' do
         expect(subject.new(query_name).match?).to be true
+      end
+    end
+
+    context 'when name is of join type' do
+      it 'returns true' do
+        expect(subject.new(join_name).match?).to be true
       end
     end
 

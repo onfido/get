@@ -67,6 +67,59 @@ Get::SportscarsFromUser.run(user, via: :employer, conditions: { make: 'Audi' }, 
 Keep the plurality of associations in mind. If an Employer has many Users, UsersFromEmployer works,
 but UserFromEmployer will throw `Get::Errors::InvalidAncestry`.
 
+## Joins
+
+Associations use 'JoinedWith', and make the dark world of joins much more palatable.
+Joins will always return a Horza::Collection.
+
+Note: It is recommended to pass a fields hash when using Get joins.
+If you do not, your database implementation will decide which values are placed in fields with common names, like :id.
+
+Join on related ids, select multiple fields
+```ruby
+join_params = {
+  on: { employer_id: :id }, # base_table(user).employer_id = join_table(employer).id
+  fields: {
+    users: [:first_name, :last_name],
+    employers: [:address],
+  }
+}
+UsersJoinedWithEmployers.run(join_params)
+```
+
+Join on related ids, select multiple fields, with conditions, limit, and offset
+```ruby
+join_params = {
+  on: { employer_id: :id }, # base_table(user).employer_id = join_table(employer).id
+  fields: {
+    users: [:first_name, :last_name],
+    employers: [:address],
+  },
+  conditions: {
+    users: { last_name: 'Turner' },
+    employers: { company_name: 'Corporation ltd.' }
+  },
+  limit: 10,
+  offset: 5
+}
+UsersJoinedWithEmployers.run(join_params)
+```
+
+Join on multiple requirements, alias field names
+```ruby
+join_params = {
+  on: [
+    { employer_id: :id }, # base_table(user).employer_id = join_table(employer).id
+    { email: :email }, # base_table(user).email = join_table(employer).email
+  ]
+  fields: {
+    users: [:id, { first_name: :my_alias_for_first_name }],
+    employers: [:email, { id: :my_alias_for_employer_id }]
+  }
+}
+UsersJoinedWithEmployers.run(join_params)
+```
+
 ## Options
 
 **Base Options**
@@ -87,6 +140,14 @@ Key | Type | Details
 `conditions` | Hash | Key value pairs for the query
 `eager_load` | Boolean | Whether to eager_load the association
 `via` | [Symbol] | The associations that need to be traversed in order to reach the desired record(s). These must be in the correct order, ie user.employer.parent.children would be Get::ChildrenFromUser.run(user_id, via: [:employer, :parent]). You can also pass a single symbol instead of an array of length 1.
+
+**Join Options**
+
+Key | Type | Details
+--- | ---- | -------
+`on` | Hash or Array of Hashes | Key value pairs representing base_table field => join_table field
+`fields` | Hash | Keys are the table names, values are array of field names or hashes defining the field's alias for the join. See examples above.
+`conditions` | Hash | Keys are the table names, values are Key value pairs for the query. See examples above.
 
 ## Why is this necessary?
 

@@ -11,6 +11,8 @@ module Get
           QueryBuilder
         when 'From'
           AncestryBuilder
+        when 'JoinedWith'
+          JoinBuilder
         end
       end
     end

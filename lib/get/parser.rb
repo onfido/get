@@ -1,6 +1,6 @@
 module Get
   class Parser
-    CLASS_REGEX = /^(.*)(By|From)(.*)/
+    CLASS_REGEX = /^(.*)(By|From|JoinedWith)(.*)/
     CLASS_NAME_BY_ERROR = 'You have multiple instances of "By" in your class. Please use open-ended form ie. Get::UserBy.run(params)'
     attr_accessor :class_name, :result_entity, :method
 

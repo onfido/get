@@ -1,6 +1,7 @@
 require 'get/builders/base_builder'
 require 'get/builders/ancestry_builder'
 require 'get/builders/query_builder'
+require 'get/builders/join_builder'
 require 'get/builders'
 require 'get/configuration'
 require 'get/db'
