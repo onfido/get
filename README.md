@@ -78,7 +78,7 @@ If you do not, your database implementation will decide which values are placed 
 Join on related ids, select multiple fields
 ```ruby
 join_params = {
-  on: { employer_id: :id }, # base_table(user).employer_id = join_table(employer).id
+  on: { employer_id: :id }, # base_table(users).employer_id = join_table(employers).id
   fields: {
     users: [:first_name, :last_name],
     employers: [:address],
@@ -90,7 +90,7 @@ UsersJoinedWithEmployers.run(join_params)
 Join on related ids, select multiple fields - with conditions, limit, and offset
 ```ruby
 join_params = {
-  on: { employer_id: :id }, # base_table(user).employer_id = join_table(employer).id
+  on: { employer_id: :id }, # base_table(users).employer_id = join_table(employers).id
   fields: {
     users: [:first_name, :last_name],
     employers: [:address],
@@ -109,8 +109,8 @@ Join on multiple requirements, alias field names
 ```ruby
 join_params = {
   on: [
-    { employer_id: :id }, # base_table(user).employer_id = join_table(employer).id
-    { email: :email }, # base_table(user).email = join_table(employer).email
+    { employer_id: :id }, # base_table(users).employer_id = join_table(employers).id
+    { email: :email }, # base_table(users).email = join_table(employers).email
   ]
   fields: {
     users: [:id, { first_name: :my_alias_for_first_name }],
