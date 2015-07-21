@@ -84,7 +84,7 @@ join_params = {
     employers: [:address],
   }
 }
-UsersJoinedWithEmployers.run(join_params)
+Get::UsersJoinedWithEmployers.run(join_params)
 ```
 
 Join on related ids, select multiple fields - with conditions, limit, and offset
@@ -102,7 +102,7 @@ join_params = {
   limit: 10,
   offset: 5
 }
-UsersJoinedWithEmployers.run(join_params)
+Get::UsersJoinedWithEmployers.run(join_params)
 ```
 
 Join on multiple requirements, alias field names
@@ -117,7 +117,7 @@ join_params = {
     employers: [:email, { id: :my_alias_for_employer_id }]
   }
 }
-UsersJoinedWithEmployers.run(join_params)
+Get::UsersJoinedWithEmployers.run(join_params)
 ```
 
 ## Options
