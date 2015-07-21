@@ -72,8 +72,8 @@ but UserFromEmployer will throw `Get::Errors::InvalidAncestry`.
 Associations use 'JoinedWith', and make the dark world of joins much more palatable.
 Joins will always return a Horza::Collection.
 
-Note: It is recommended to pass a fields hash when using Get joins.
-If you do not, your database implementation will decide which values are placed in fields with common names, like :id.
+*It is recommended to pass a fields hash when using Get joins.
+If you do not, your database implementation will decide which values are placed in fields with common names, like :id.*
 
 Join on related ids, select multiple fields
 ```ruby
@@ -87,7 +87,7 @@ join_params = {
 UsersJoinedWithEmployers.run(join_params)
 ```
 
-Join on related ids, select multiple fields, with conditions, limit, and offset
+Join on related ids, select multiple fields - with conditions, limit, and offset
 ```ruby
 join_params = {
   on: { employer_id: :id }, # base_table(user).employer_id = join_table(employer).id
