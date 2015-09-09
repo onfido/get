@@ -14,5 +14,8 @@ module Get
 
     class InvalidClassName < StandardError
     end
+
+    class OptionsNotPermitted < StandardError
+    end
   end
 end

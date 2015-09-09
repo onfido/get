@@ -224,6 +224,17 @@ describe Get do
             expect(Get::UsersBy.run(last_name: last_name).is_a?(Horza::Entities::Collection)).to be true
           end
         end
+
+        context 'when All' do
+          it 'gets all records' do
+            result = Get::AllUsers.run
+            expect(result.length).to eq match_count + miss_count
+          end
+
+          it 'throws an exception if options passed' do
+            expect{ Get::AllUsers.run(last_name: last_name) }.to raise_error Get::Errors::OptionsNotPermitted
+          end
+        end 
       end
 
       context 'with options' do

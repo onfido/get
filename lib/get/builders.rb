@@ -7,7 +7,7 @@ module Get
 
       def builder_for_method(method)
         case method
-        when 'By'
+        when 'By', 'All'
           QueryBuilder
         when 'From'
           AncestryBuilder
