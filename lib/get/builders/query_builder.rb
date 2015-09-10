@@ -22,7 +22,7 @@ module Get
 
           @field, @entity, @collection, @store = args[:key], args[:result_entity], args[:collection], args[:store]
 
-          def initialize(params, options = {})
+          def initialize(params = nil, options = {})
             @params, @options = params, options
             super(query_params)
           end
