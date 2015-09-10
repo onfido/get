@@ -33,6 +33,11 @@ With Options
 Get::UsersByLastName.run('Turner', limit: 10, offset: 20, order: { last_name: :desc })
 ```
 
+All records
+```ruby
+Get::AllUsers.run
+```
+
 #### Associations
 
 Associations use 'From', and are sugar for the chains we so often write in rails.
