@@ -1,3 +1,4 @@
+require 'horza'
 require 'get/builders/base_builder'
 require 'get/builders/ancestry_builder'
 require 'get/builders/query_builder'
@@ -8,7 +9,8 @@ require 'get/db'
 require 'get/errors'
 require 'get/parser'
 require 'get/run_methods'
-require 'horza'
+require 'get/version'
+
 
 module Get
   extend Get::Configuration
