@@ -4,7 +4,6 @@ require 'get/builders/ancestry_builder'
 require 'get/builders/query_builder'
 require 'get/builders/join_builder'
 require 'get/builders'
-require 'get/configuration'
 require 'get/db'
 require 'get/errors'
 require 'get/parser'
@@ -13,13 +12,11 @@ require 'get/version'
 
 
 module Get
-  extend Get::Configuration
+  extend Horza::SharedConfig
 
   GET_CLASS_REGEX = /^(.*)(By|From)(.*)/
 
   class << self
-    attr_writer :configuration
-
     def included(base)
       base.class_eval do
         extend ::Get::RunMethods

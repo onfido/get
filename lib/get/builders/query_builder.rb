@@ -8,7 +8,7 @@ module Get
           key: @key,
           collection: @result_entity.plural?,
           result_entity: @result_entity.singularize.symbolize,
-          store: Get.adapter.context_for_entity(@result_entity.singularize.symbolize)
+          store: Get.adapter.context_for_entity(@result_entity.singularize)
         }
       end
 

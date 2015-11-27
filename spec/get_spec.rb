@@ -13,35 +13,31 @@ else
     end
   end
 
-  module GetSpec
-    class Employer < ActiveRecord::Base
-      has_many :users
-      has_many :sports_cars
-    end
-
-    class User < ActiveRecord::Base
-      belongs_to :employer
-    end
-
-    class SportsCar < ActiveRecord::Base
-      belongs_to :employer
-    end
+  class Employer < ActiveRecord::Base
+    has_many :users
+    has_many :sports_cars
   end
+
+  class User < ActiveRecord::Base
+    belongs_to :employer
+  end
+
+  class SportsCar < ActiveRecord::Base
+    belongs_to :employer
+  end
+
 end
 
 describe Get do
   let(:last_name) { 'Turner' }
   let(:adapter) { :active_record }
 
-  # Preserve system config for other tests
-  before(:all) { @system_config = Get.configuration }
-  after(:all) { Get.configuration = @system_config }
-
   # Reset base config with each iteration
   before { Get.configure { |config| config.adapter = adapter } }
+  
   after do
-    GetSpec::User.delete_all
-    GetSpec::Employer.delete_all
+    User.delete_all
+    Employer.delete_all
     Get.reset
   end
 
@@ -51,37 +47,6 @@ describe Get do
     end
   end
 
-  context 'development_mode' do
-    before do
-      Get.reset
-      Get.configure do |config|
-        config.adapter = 'my_adapter'
-        config.development_mode = true
-      end
-    end
-    after do
-      Get.reset
-    end
-    it 'sets Horza to development mode' do
-      expect(Horza.configuration.development_mode).to be true
-    end
-  end
-
-  context 'namespaces' do
-    before do
-      Get.reset
-      Get.configure do |config|
-        config.adapter = 'my_adapter'
-        config.namespaces =  [GetSpec]
-      end
-    end
-    after do
-      Get.reset
-    end
-    it 'sets Horza to development mode' do
-      expect(Horza.configuration.namespaces).to eq [GetSpec]
-    end
-  end
 
   context '#adapter' do
     context 'when the adapter is set' do
@@ -91,31 +56,27 @@ describe Get do
     end
 
     context 'when the adapter is not set' do
-      before { Get.reset }
-      after { Get.reset }
-
       it 'throws error' do
-        expect { Get.adapter }.to raise_error(Get::Errors::Base)
+        Get.reset
+        expect { Get.adapter }.to raise_error(Horza::Errors::AdapterError)
       end
     end
   end
 
   context '#reset' do
     before do
-      Get.configure do |config|
-        config.adapter = 'my_adapter'
-      end
-      Get.reset
+      Get.configure { |config| config.constant_paths += ['my_path'] }
     end
     it 'resets the config' do
-      expect(Get.configuration.adapter).to be nil
+      Get.reset
+      expect(Get.configuration.constant_paths).to be_empty
     end
   end
 
   context '#run!' do
     context 'singular form' do
       context 'when the record exists' do
-        let!(:user) { GetSpec::User.create(last_name: last_name) }
+        let!(:user) { User.create(last_name: last_name) }
 
         context 'field in class name' do
           it 'gets the records based on By[KEY]' do
@@ -149,7 +110,7 @@ describe Get do
 
     context 'ancestry' do
       context 'valid ancestry with no saved parent' do
-        let(:user2) { GetSpec::User.create }
+        let(:user2) { User.create }
         it 'returns nil' do
           expect(Get::EmployerFromUser.run!(user2)).to be nil
         end
@@ -160,7 +121,7 @@ describe Get do
   context '#run' do
     context 'singular form' do
       context 'when the record exists' do
-        let!(:user) { GetSpec::User.create(last_name: last_name) }
+        let!(:user) { User.create(last_name: last_name) }
 
         context 'field in class name' do
           it 'gets the records based on By[KEY]' do
@@ -199,8 +160,8 @@ describe Get do
 
       context 'when records exist' do
         before do
-          match_count.times { GetSpec::User.create(last_name: last_name)  }
-          miss_count.times { GetSpec::User.create }
+          match_count.times { User.create(last_name: last_name)  }
+          miss_count.times { User.create }
         end
 
         context 'field in class name' do
@@ -243,8 +204,8 @@ describe Get do
         let(:miss_count) { 7 }
 
         before do
-          match_count.times { GetSpec::User.create(last_name: last_name)  }
-          miss_count.times { GetSpec::User.create }
+          match_count.times { User.create(last_name: last_name)  }
+          miss_count.times { User.create }
         end
 
         context 'when limit is passed' do
@@ -264,7 +225,7 @@ describe Get do
         context 'when order is passed' do
           it 'orders the response' do
             result = Get::UsersBy.run({ last_name: last_name }, order: { id: :asc })
-            ar_result = GetSpec::User.where(last_name: last_name).order('id asc')
+            ar_result = User.where(last_name: last_name).order('id asc')
 
             expect(result.first.id).to eq ar_result.first.id
             expect(result.last.id).to eq ar_result.last.id
@@ -281,9 +242,9 @@ describe Get do
 
     context 'associations' do
       context 'direct relation' do
-        let(:employer) { GetSpec::Employer.create }
-        let!(:user1) { GetSpec::User.create(employer: employer) }
-        let!(:user2) { GetSpec::User.create(employer: employer) }
+        let(:employer) { Employer.create }
+        let!(:user1) { User.create(employer: employer) }
+        let!(:user2) { User.create(employer: employer) }
 
         context 'ParentFromChild' do
           it 'returns parent' do
@@ -294,7 +255,7 @@ describe Get do
         context 'ChildrenFromParent' do
           it 'returns children' do
             result = Get::UsersFromEmployer.run(employer)
-            ar_result = GetSpec::User.where(employer_id: employer.id).order('id desc')
+            ar_result = User.where(employer_id: employer.id).order('id desc')
             expect(result.first.id).to eq ar_result.first.id
             expect(result.last.id).to eq ar_result.last.id
           end
@@ -307,14 +268,14 @@ describe Get do
         end
 
         context 'valid ancestry with no saved childred' do
-          let(:employer2) { GetSpec::Employer.create }
+          let(:employer2) { Employer.create }
           it 'returns empty collection error' do
             expect(Get::UsersFromEmployer.run(employer2).empty?).to be true
           end
         end
 
         context 'valid ancestry with no saved parent' do
-          let(:user2) { GetSpec::User.create }
+          let(:user2) { User.create }
           it 'returns nil' do
             expect(Get::EmployerFromUser.run(user2)).to be nil
           end
@@ -322,9 +283,9 @@ describe Get do
       end
 
       context 'using via' do
-        let(:employer) { GetSpec::Employer.create }
-        let(:user) { GetSpec::User.create(employer: employer) }
-        let(:sportscar) { GetSpec::SportsCar.create(employer: employer) }
+        let(:employer) { Employer.create }
+        let(:user) { User.create(employer: employer) }
+        let(:sportscar) { SportsCar.create(employer: employer) }
 
         before do
           employer.sports_cars << sportscar
@@ -342,13 +303,13 @@ describe Get do
       end
 
       context 'with options' do
-        let(:employer) { GetSpec::Employer.create }
+        let(:employer) { Employer.create }
         let(:match_count) { 20 }
         let(:miss_count) { 7 }
 
         before do
-          match_count.times { employer.users << GetSpec::User.create(employer: employer, last_name: last_name) }
-          miss_count.times { employer.users << GetSpec::User.create(employer: employer) }
+          match_count.times { employer.users << User.create(employer: employer, last_name: last_name) }
+          miss_count.times { employer.users << User.create(employer: employer) }
         end
 
         context 'when conditions are passed' do
@@ -375,7 +336,7 @@ describe Get do
         context 'when order is passed' do
           it 'orders response' do
             result = Get::UsersFromEmployer.run(employer.id, conditions: { last_name: last_name }, order: { id: :asc })
-            ar_result = GetSpec::User.where(employer_id: employer.id, last_name: last_name).order('id asc')
+            ar_result = User.where(employer_id: employer.id, last_name: last_name).order('id asc')
 
             expect(result.first.id).to eq ar_result.first.id
             expect(result.last.id).to eq ar_result.last.id
@@ -392,14 +353,14 @@ describe Get do
     end
 
     context 'joins' do
-      let(:employer) { GetSpec::Employer.create }
-      let(:employer2) { GetSpec::Employer.create }
+      let(:employer) { Employer.create }
+      let(:employer2) { Employer.create }
       let(:match_count) { 20 }
       let(:miss_count) { 7 }
 
       before do
-        match_count.times { employer2.users << GetSpec::User.create(employer: employer2) }
-        miss_count.times { employer.users << GetSpec::User.create(employer: employer) }
+        match_count.times { employer2.users << User.create(employer: employer2) }
+        miss_count.times { employer.users << User.create(employer: employer) }
       end
 
       context 'when no conditions are passed' do

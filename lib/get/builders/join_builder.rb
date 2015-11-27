@@ -7,7 +7,7 @@ module Get
         {
           base_table: @result_entity.symbolize,
           join_table: @key,
-          store: Get.adapter.context_for_entity(@result_entity.singularize.symbolize)
+          store: Get.adapter.context_for_entity(@result_entity.singularize)
         }
       end
 
