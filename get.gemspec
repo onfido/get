@@ -1,9 +1,9 @@
 $:.push File.expand_path('../lib', __FILE__)
-require 'orm_adapter/version'
+require 'get/version'
 
 Gem::Specification.new do |s|
   s.name = 'get'
-  s.version = '0.3.3'
+  s.version = Get::VERSION
   s.platform = Gem::Platform::RUBY
   s.authors = ['Blake Turner']
   s.description = 'Encapsulate your database queries with dynamically generated classes'
@@ -16,12 +16,11 @@ Gem::Specification.new do |s|
   s.test_files    = Dir.glob("{spec}/**/*")
   s.require_paths = ['lib']
 
-  s.add_runtime_dependency 'horza', '~> 0.5.0'
+  s.add_runtime_dependency 'horza', '~> 1.0'
 
   s.add_development_dependency 'bundler', '>= 1.0.0'
-  s.add_development_dependency 'activerecord', '>= 3.2.15'
-  s.add_development_dependency 'activesupport', '>= 3.2.15'
-  s.add_development_dependency 'rspec', '>= 2.4.0'
+  s.add_development_dependency 'activerecord', '~> 3.2'
+  s.add_development_dependency 'rspec'
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'byebug'
 end

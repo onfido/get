@@ -314,19 +314,21 @@ end
 By encapsulating the query in a class, we're able to stub it at the class level, which eliminates then need to create any dependencies.
 This will speed up tests (a little), but more importantly it makes them easier to read and write.
 
-## Config
 
-**Define your adapter**
+## Config
+<tt>Get</tt> uses the underlying Horza configuration, so all configuration options can be set on <tt>Get</tt> just like they would on <tt>Horza</tt>.
+
+***e.g. Defining your adapter***
 
 _config/initializers/get.rb_
 ```ruby
 Get.configure { |config| config.adapter = :active_record }
 ```
-You can reset the config at any time using `Get.reset`.
+For more details on configuration check out the <tt>Horza</tt> [documentation.](https://github.com/onfido/horza) 
 
 ## Adapters
 
-Get currently works with ActiveRecord.
+Get currently only works with ActiveRecord.
 
 ## Edge Cases
 
